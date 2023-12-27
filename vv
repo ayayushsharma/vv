@@ -285,10 +285,10 @@ autodetect() {
     waitforterminal
 
     # Don't show escape sequences the terminal doesn't understand.
-    stty -echo			# Hush-a Mandara Ni Pari
+    # stty -echo			# Hush-a Mandara Ni Pari
 
     # Don't consume backspace key before 'read'.
-    stty -icanon
+    # stty -icanon
 
     # Hide the cursor so it doesn't dash around when we show the prompt.
     tput civis
@@ -307,7 +307,7 @@ autodetect() {
     [[ numcolors -le 256 ]] && dither="yup" || dither=""
 
     # Detect terminal background color (for alpha channel).
-    background=$(getbg)
+    # background=$(getbg)
 
     # Autodetect the sixel screen size .
     windowchange
@@ -319,31 +319,31 @@ autodetect() {
     configreadline
 }
 
-getbg() {
+# getbg() {
     # Send the xterm escape sequence to get the background color of
     # the terminal. Terminal responds: $'\e]11;rgb:ffff/0000/ffff\e\\'.
     # Prints results as hexadecimal (16-bit per channel) in the form
     # #RRRRGGGGBBBB (useful for ImageMagick).
-    local p=11			# 11 is bg, 10 is fg in escape sequence
+  #   local p=11			# 11 is bg, 10 is fg in escape sequence
 
-    # wait for terminal to be ready (up to 5 seconds)
-    waitforterminal 5
+  #   # wait for terminal to be ready (up to 5 seconds)
+  #   waitforterminal 5
 
-    # Check for reverse video
-    IFS=";?$"  read -a REPLY -s -t $timeout -d "y" -p $'\e[?5$p'
-    if [[ $? -le 128  && ( ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ) ]]; then
-	# Reversed colors!
-	p=10
-    fi
+  #   # Check for reverse video
+  #   IFS=";?$"  read -a REPLY -s -t $timeout -d "y" -p $'\e[?5$p'
+  #   if [[ $? -le 128  && ( ${REPLY[2]} == 1 || ${REPLY[2]} == 3 ) ]]; then
+	# # Reversed colors!
+	# p=10
+  #   fi
 
-    # Query the terminal background (or foreground) color.
-    IFS=";:/"  read -a REPLY -r -s -t $timeout -d "\\" -p $'\e]'$p$';?\e\\'
-    if [[ $? -le 128  &&  ${REPLY[1]:-} =~ ^rgb ]]; then
-	echo '#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
-    else
-	echo $background
-    fi
-}
+  #   # Query the terminal background (or foreground) color.
+  #   IFS=";:/"  read -a REPLY -r -s -t $timeout -d "\\" -p $'\e]'$p$';?\e\\'
+  #   if [[ $? -le 128  &&  ${REPLY[1]:-} =~ ^rgb ]]; then
+	# echo '#'${REPLY[2]}${REPLY[3]}${REPLY[4]%%$'\e'*}
+  #   else
+	# echo $background
+  #   fi
+# }
 
 getfg() {
     # Send the xterm escape sequence to get the fg color of the terminal.
@@ -428,26 +428,13 @@ hassixelordie() {
     if [[ "$TERM" == yaft* ]]; then hassixel=yeah; fi
 
     if [[ -z "$hassixel" ]]; then
-	cat <<-EOF >&2
-	Error: Your terminal does not report having sixel graphics support.
-
-	Please use a sixel capable terminal, such as xterm -ti vt340, or
-	ask your terminal manufacturer to add sixel support.
-
-	You may test your terminal by viewing a single image, like so:
-
-		convert  foo.jpg  -geometry 800x480  sixel:-
-
-	If your terminal actually does support sixel, please file a bug
-	report at http://github.com/hackerb9/vv/issues
-	EOF
 	read -s -t 1 -d "c" -p $'\e[c' >&2
 	if [[ "$REPLY" ]]; then
 	    echo
 	    cat -v <<< "(Please mention device attribute codes: ${REPLY}c)"
 	fi
 
-	exit 1
+	# exit 1
     fi
 }
 
