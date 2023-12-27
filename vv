@@ -122,7 +122,7 @@ declare -g  shownotices="y"	# Show optional messages.("Install X to get Y").
 # To disable, set to empty string. To enable, set to any string.
 declare -g   dither="y"  # Improve image quality by dithering if viewmode==full.
 declare -g   aalias="y"  # Smooths jaggies when zooming in on small images.
-declare -g  enhance=""	 # Lightens dark images with gamma +1.5. Set by (e)
+declare -g   enhance=""	 # Lightens dark images with gamma +1.5. Set by (e)
 declare -g   zoomin="y"  # Magnify small images to screen size (slower).
 
 # Defaults if terminal autodetection fails.
@@ -540,7 +540,7 @@ inittermkey() {
 
     # To be valid, we must enable terminal application mode key sequences.
     if tput smkx; then
-	for k in $(infocmp -L1 | egrep 'key_|cursor_'); do
+	for k in $(infocmp -L1 | grep -E 'key_|cursor_'); do
 	    a=""; x=""
 	    # Example "k:	key_down=\EOB,"
 	    a=${k#*key_}
@@ -1445,27 +1445,28 @@ doit () {
 	    showprompt		# Show "Press space to keep..."
 
 	    # Use read timeout to check several times a second for window resize.
-	    REPLY=
-	    while [[ -z $REPLY && -z $SHOULDREDRAW ]]; do
-		read $BASH4BUG -s -n1 -t 0.25 < /dev/tty
-		local e=$?
-		if [[ $e -gt 0 ]]; then
-		    # Read command returned an error (usually timeout).
-		    if [[ "$slideshow" ]]; then
-			if doslideshow "$f"; then
-			    continue 3 # User hit q to quit vv
-			else
-			    continue 2 # User hit ESC to stop slideshow
-			fi
-		    elif [[ $e -gt 128 ]]; then
-			# normal read timeout (just loop to allow for SIGWINCH)
-			continue 1			#  Read a key loop.
-		    else
-			echo "Error in read: $e. This shouldn't happen." >&2
-			continue 1
-		    fi
-		fi
-	    done
+	    # REPLY=
+	    # while [[ -z $REPLY && -z $SHOULDREDRAW ]]; do
+        # read $BASH4BUG -s -n1 -t 0.25 < /dev/tty
+        # local e=$?
+		    
+        # if [[ $e -gt 0 ]]; then
+		    # # Read command returned an error (usually timeout).
+		    #   if [[ "$slideshow" ]]; then
+			  #     if doslideshow "$f"; then
+			  #       continue 3 # User hit q to quit vv
+			  #     else
+			        continue 2 # User hit ESC to stop slideshow
+			  #     fi
+		    #   elif [[ $e -gt 128 ]]; then
+			  #     # normal read timeout (just loop to allow for SIGWINCH)
+			  #     continue 1			#  Read a key loop.
+		    #   else
+			  #     echo "Error in read: $e. This shouldn't happen." >&2
+			  #     continue 1
+		    #   fi
+		    # fi
+	    # done
 
 	    if [[ $SHOULDREDRAW ]]; then
 		# Sigwinch interrupt handler resized screen
@@ -2374,7 +2375,7 @@ while true; do
 	    ;;
 	-a|--antialias)
 	    aalias=yup
-	    echo "Antialias on. (Smooth jaggies when scaling image)."
+	    # echo "Antialias on. (Smooth jaggies when scaling image)."
 	    shift
 	    continue
 	    ;;
@@ -2394,7 +2395,7 @@ while true; do
 	    ;;
 	-P|--preview-size)
 	    forcepsize=${2#*x} # Ignore width if given geometry (e.g., 800x256)
-	    echo "Fast-view's preview size set to ${width}x${forcepsize}."
+	    # echo "Fast-view's preview size set to ${width}x${forcepsize}."
 	    if [[ $forcepsize -eq 0 ]]; then usage; exit 1; fi
 	    previewsize=$forcepsize
 	    shift 2
@@ -2404,7 +2405,7 @@ while true; do
 	    previewlines=$2
 	    if [[ $previewlines -eq 0 ]]; then usage; exit 1; fi
 	    previewsize=fontheight*previewlines
-	    echo "Fast-view's preview size set to ${width}x${previewsize}."
+	    # echo "Fast-view's preview size set to ${width}x${previewsize}."
 	    shift 2
 	    continue
 	    ;;
